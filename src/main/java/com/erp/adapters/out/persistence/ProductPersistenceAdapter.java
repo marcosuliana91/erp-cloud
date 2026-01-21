@@ -8,9 +8,11 @@ import com.erp.domain.product.ProductId;
 import com.erp.infrastructure.persistence.entity.ProductEntity;
 import com.erp.infrastructure.persistence.repository.ProductJpaRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,8 +45,8 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public Page<Product> findAll(Pageable pageable) {
-        return jpaRepository.findAll(pageable)
-            .map(mapper::toDomain);
+        Page<ProductEntity> entityPage = jpaRepository.findAll(pageable);
+        return mapToProductPage(entityPage);
     }
 
     @Override
@@ -86,19 +88,26 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public Page<Product> findByDescriptionContaining(String description, Pageable pageable) {
-        return jpaRepository.findByDescriptionContainingIgnoreCase(description, pageable)
-            .map(mapper::toDomain);
+        Page<ProductEntity> entityPage = jpaRepository.findByDescriptionContainingIgnoreCase(description, pageable);
+        return mapToProductPage(entityPage);
     }
 
     @Override
     public Page<Product> findByFamily(String family, Pageable pageable) {
-        return jpaRepository.findByFamily(family, pageable)
-            .map(mapper::toDomain);
+        Page<ProductEntity> entityPage = jpaRepository.findByFamily(family, pageable);
+        return mapToProductPage(entityPage);
     }
 
     @Override
     public Page<Product> findByBrand(String brand, Pageable pageable) {
-        return jpaRepository.findByBrand(brand, pageable)
-            .map(mapper::toDomain);
+        Page<ProductEntity> entityPage = jpaRepository.findByBrand(brand, pageable);
+        return mapToProductPage(entityPage);
+    }
+
+    private Page<Product> mapToProductPage(Page<ProductEntity> entityPage) {
+        List<Product> products = entityPage.getContent().stream()
+            .map(mapper::toDomain)
+            .toList();
+        return new PageImpl<>(products, entityPage.getPageable(), entityPage.getTotalElements());
     }
 }
