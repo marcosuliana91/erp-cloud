@@ -24,7 +24,14 @@ CREATE TABLE IF NOT EXISTS products (
     stock_quantity INTEGER DEFAULT 0,
     minimum_stock INTEGER DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- Check constraints inline
+    CONSTRAINT chk_products_type CHECK (type IN ('PRODUCT', 'SERVICE', 'RAW_MATERIAL', 'CONSUMABLE', 'ASSET')),
+    CONSTRAINT chk_products_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'DISCONTINUED')),
+    CONSTRAINT chk_products_unit_price_non_negative CHECK (unit_price >= 0),
+    CONSTRAINT chk_products_cost_price_non_negative CHECK (cost_price >= 0),
+    CONSTRAINT chk_products_stock_non_negative CHECK (stock_quantity >= 0),
+    CONSTRAINT chk_products_min_stock_non_negative CHECK (minimum_stock >= 0)
 );
 
 -- Create indexes
@@ -36,22 +43,3 @@ CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand);
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
 CREATE INDEX IF NOT EXISTS idx_products_ncm_code ON products(ncm_code);
 CREATE INDEX IF NOT EXISTS idx_products_type ON products(type);
-
--- Add check constraints
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_type
-    CHECK (type IN ('PRODUCT', 'SERVICE', 'RAW_MATERIAL', 'CONSUMABLE', 'ASSET'));
-
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_status
-    CHECK (status IN ('ACTIVE', 'INACTIVE', 'DISCONTINUED'));
-
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_unit_price_non_negative
-    CHECK (unit_price >= 0);
-
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_cost_price_non_negative
-    CHECK (cost_price >= 0);
-
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_stock_non_negative
-    CHECK (stock_quantity >= 0);
-
-ALTER TABLE products ADD CONSTRAINT IF NOT EXISTS chk_products_min_stock_non_negative
-    CHECK (minimum_stock >= 0);
