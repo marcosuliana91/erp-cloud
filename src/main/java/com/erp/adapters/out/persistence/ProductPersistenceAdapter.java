@@ -7,6 +7,7 @@ import com.erp.domain.product.ProductCode;
 import com.erp.domain.product.ProductId;
 import com.erp.infrastructure.persistence.entity.ProductEntity;
 import com.erp.infrastructure.persistence.repository.ProductJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,15 +21,11 @@ import java.util.Optional;
  * Converts between domain and persistence models.
  */
 @Repository
+@RequiredArgsConstructor
 public class ProductPersistenceAdapter implements ProductRepository {
 
     private final ProductJpaRepository jpaRepository;
     private final ProductPersistenceMapper mapper;
-
-    public ProductPersistenceAdapter(ProductJpaRepository jpaRepository, ProductPersistenceMapper mapper) {
-        this.jpaRepository = jpaRepository;
-        this.mapper = mapper;
-    }
 
     @Override
     public Product save(Product product) {

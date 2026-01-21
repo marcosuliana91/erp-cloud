@@ -4,6 +4,7 @@ import com.erp.application.port.in.CreateProductUseCase;
 import com.erp.application.port.out.ProductRepository;
 import com.erp.domain.product.*;
 import com.erp.shared.exception.DuplicateEntityException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +16,10 @@ import java.math.BigDecimal;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
 
     private final ProductRepository productRepository;
-
-    public CreateProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public Product execute(CreateProductCommand command) {

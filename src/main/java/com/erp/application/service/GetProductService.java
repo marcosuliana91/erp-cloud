@@ -5,6 +5,7 @@ import com.erp.application.port.out.ProductRepository;
 import com.erp.domain.product.Product;
 import com.erp.domain.product.ProductId;
 import com.erp.shared.exception.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,10 @@ import java.util.UUID;
  */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class GetProductService implements GetProductUseCase {
 
     private final ProductRepository productRepository;
-
-    public GetProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public Product execute(UUID id) {

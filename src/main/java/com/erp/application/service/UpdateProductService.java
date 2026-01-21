@@ -5,6 +5,7 @@ import com.erp.application.port.out.ProductRepository;
 import com.erp.domain.product.*;
 import com.erp.shared.exception.DuplicateEntityException;
 import com.erp.shared.exception.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,10 @@ import java.math.BigDecimal;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UpdateProductService implements UpdateProductUseCase {
 
     private final ProductRepository productRepository;
-
-    public UpdateProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public Product execute(UpdateProductCommand command) {

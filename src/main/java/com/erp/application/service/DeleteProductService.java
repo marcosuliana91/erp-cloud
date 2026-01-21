@@ -5,6 +5,7 @@ import com.erp.application.port.out.ProductRepository;
 import com.erp.domain.product.Product;
 import com.erp.domain.product.ProductId;
 import com.erp.shared.exception.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,10 @@ import java.util.UUID;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DeleteProductService implements DeleteProductUseCase {
 
     private final ProductRepository productRepository;
-
-    public DeleteProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public void execute(UUID id) {

@@ -1,6 +1,10 @@
 package com.erp.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,6 +23,9 @@ import java.util.UUID;
     @Index(name = "idx_products_status", columnList = "status"),
     @Index(name = "idx_products_ncm_code", columnList = "ncm_code")
 })
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProductEntity {
 
     @Id
@@ -98,211 +105,6 @@ public class ProductEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public ProductEntity() {
-    }
-
-    // Getters and Setters
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getIntegrationCode() {
-        return integrationCode;
-    }
-
-    public void setIntegrationCode(String integrationCode) {
-        this.integrationCode = integrationCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDetailedDescription() {
-        return detailedDescription;
-    }
-
-    public void setDetailedDescription(String detailedDescription) {
-        this.detailedDescription = detailedDescription;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getNcmCode() {
-        return ncmCode;
-    }
-
-    public void setNcmCode(String ncmCode) {
-        this.ncmCode = ncmCode;
-    }
-
-    public String getEanCode() {
-        return eanCode;
-    }
-
-    public void setEanCode(String eanCode) {
-        this.eanCode = eanCode;
-    }
-
-    public ProductTypeEnum getType() {
-        return type;
-    }
-
-    public void setType(ProductTypeEnum type) {
-        this.type = type;
-    }
-
-    public ProductStatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProductStatusEnum status) {
-        this.status = status;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getFamily() {
-        return family;
-    }
-
-    public void setFamily(String family) {
-        this.family = family;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public BigDecimal getCostPrice() {
-        return costPrice;
-    }
-
-    public void setCostPrice(BigDecimal costPrice) {
-        this.costPrice = costPrice;
-    }
-
-    public BigDecimal getGrossWeight() {
-        return grossWeight;
-    }
-
-    public void setGrossWeight(BigDecimal grossWeight) {
-        this.grossWeight = grossWeight;
-    }
-
-    public BigDecimal getNetWeight() {
-        return netWeight;
-    }
-
-    public void setNetWeight(BigDecimal netWeight) {
-        this.netWeight = netWeight;
-    }
-
-    public BigDecimal getHeight() {
-        return height;
-    }
-
-    public void setHeight(BigDecimal height) {
-        this.height = height;
-    }
-
-    public BigDecimal getWidth() {
-        return width;
-    }
-
-    public void setWidth(BigDecimal width) {
-        this.width = width;
-    }
-
-    public BigDecimal getDepth() {
-        return depth;
-    }
-
-    public void setDepth(BigDecimal depth) {
-        this.depth = depth;
-    }
-
-    public String getInternalNotes() {
-        return internalNotes;
-    }
-
-    public void setInternalNotes(String internalNotes) {
-        this.internalNotes = internalNotes;
-    }
-
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public Integer getMinimumStock() {
-        return minimumStock;
-    }
-
-    public void setMinimumStock(Integer minimumStock) {
-        this.minimumStock = minimumStock;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public enum ProductTypeEnum {
         PRODUCT,

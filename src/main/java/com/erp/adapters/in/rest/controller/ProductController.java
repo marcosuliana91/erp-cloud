@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/products")
 @Tag(name = "Products", description = "Product management API")
+@RequiredArgsConstructor
 public class ProductController extends BaseController<CreateProductRequest, ProductResponse, UUID> {
 
     private final CreateProductUseCase createProductUseCase;
@@ -36,21 +38,6 @@ public class ProductController extends BaseController<CreateProductRequest, Prod
     private final ListProductsUseCase listProductsUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
     private final ProductDtoMapper mapper;
-
-    public ProductController(
-            CreateProductUseCase createProductUseCase,
-            UpdateProductUseCase updateProductUseCase,
-            GetProductUseCase getProductUseCase,
-            ListProductsUseCase listProductsUseCase,
-            DeleteProductUseCase deleteProductUseCase,
-            ProductDtoMapper mapper) {
-        this.createProductUseCase = createProductUseCase;
-        this.updateProductUseCase = updateProductUseCase;
-        this.getProductUseCase = getProductUseCase;
-        this.listProductsUseCase = listProductsUseCase;
-        this.deleteProductUseCase = deleteProductUseCase;
-        this.mapper = mapper;
-    }
 
     @PostMapping
     @Operation(summary = "Create a new product", description = "Creates a new product in the system")
