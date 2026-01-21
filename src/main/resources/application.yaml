@@ -27,11 +27,11 @@ spring:
         jdbc:
           time_zone: UTC
     open-in-view: false
-    defer-datasource-initialization: true
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
+    drop-first: false
 
   jackson:
     serialization:
@@ -77,6 +77,7 @@ logging:
     org.springframework.web: INFO
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql: WARN
+    liquibase: INFO
 
 ---
 spring:
@@ -87,13 +88,11 @@ spring:
   jpa:
     show-sql: true
 
-  liquibase:
-    contexts: dev
-
 logging:
   level:
     com.erp: DEBUG
     org.hibernate.SQL: DEBUG
+    liquibase: DEBUG
 
 ---
 spring:
