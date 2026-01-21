@@ -1,11 +1,16 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Objects;
 
 /**
  * Value Object representing a Product code (SKU).
  * This is the business identifier visible in the ERP.
  */
+@Getter
+@EqualsAndHashCode
 public final class ProductCode {
 
     private static final int MAX_LENGTH = 60;
@@ -24,23 +29,6 @@ public final class ProductCode {
 
     public static ProductCode of(String value) {
         return new ProductCode(value);
-    }
-
-    public String value() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductCode that = (ProductCode) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

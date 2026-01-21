@@ -1,12 +1,16 @@
 package com.erp.domain.product;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
  * Value Object representing weight in kilograms.
+ * Note: Uses custom equals/hashCode due to BigDecimal comparison semantics.
  */
+@Getter
 public final class Weight {
 
     private static final int SCALE = 4;
@@ -60,7 +64,7 @@ public final class Weight {
 
     @Override
     public int hashCode() {
-        return Objects.hash(valueInKg);
+        return Objects.hash(valueInKg.stripTrailingZeros());
     }
 
     @Override

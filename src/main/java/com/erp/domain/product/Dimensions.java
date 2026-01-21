@@ -1,12 +1,16 @@
 package com.erp.domain.product;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
  * Value Object representing product dimensions in centimeters.
+ * Note: Uses custom equals/hashCode due to BigDecimal comparison semantics.
  */
+@Getter
 public final class Dimensions {
 
     private static final int SCALE = 2;
@@ -46,18 +50,6 @@ public final class Dimensions {
         return new Dimensions(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    public BigDecimal height() {
-        return height;
-    }
-
-    public BigDecimal width() {
-        return width;
-    }
-
-    public BigDecimal depth() {
-        return depth;
-    }
-
     public BigDecimal volumeInCubicCentimeters() {
         return height.multiply(width).multiply(depth);
     }
@@ -84,7 +76,11 @@ public final class Dimensions {
 
     @Override
     public int hashCode() {
-        return Objects.hash(height, width, depth);
+        return Objects.hash(
+            height.stripTrailingZeros(),
+            width.stripTrailingZeros(),
+            depth.stripTrailingZeros()
+        );
     }
 
     @Override

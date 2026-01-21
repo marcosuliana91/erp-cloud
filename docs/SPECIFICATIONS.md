@@ -22,6 +22,7 @@ Sistema ERP backend desenvolvido com arquitetura hexagonal (Ports and Adapters),
 | Migrations | Liquibase | 5.x |
 | Build | Maven | 3.x |
 | API Docs | SpringDoc OpenAPI | 2.8.0 |
+| Boilerplate | Lombok | 1.18.36 |
 
 ---
 
@@ -50,7 +51,7 @@ Sistema ERP backend desenvolvido com arquitetura hexagonal (Ports and Adapters),
 │                       DOMAIN LAYER                              │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  Entities  │  Value Objects  │  Domain Services         │   │
-│  │  (Pure Java - No Framework Dependencies)                │   │
+│  │  (Lombok for boilerplate reduction)                     │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                                 │
@@ -67,7 +68,7 @@ Sistema ERP backend desenvolvido com arquitetura hexagonal (Ports and Adapters),
 
 ```
 com.erp/
-├── domain/                          # Camada de Domínio (Pure Java)
+├── domain/                          # Camada de Domínio (Lombok)
 │   └── product/
 │       ├── Product.java             # Aggregate Root
 │       ├── ProductId.java           # Value Object
@@ -200,39 +201,57 @@ A entidade `Product` representa o cadastro de produtos do sistema ERP.
 
 ### 4.2 Value Objects
 
+Todos os Value Objects utilizam Lombok para reduzir boilerplate:
+- `@Getter` - Gera getters automáticos (padrão JavaBean: `getValue()`)
+- `@EqualsAndHashCode` - Gera equals/hashCode baseado nos campos
+
+> **Nota:** Value Objects com `BigDecimal` mantêm equals/hashCode customizado para usar `compareTo()` ao invés de `equals()`.
+
 #### ProductId
 ```java
 // Identificador único do produto baseado em UUID
+@Getter @EqualsAndHashCode
 ProductId.generate()       // Gera novo ID
 ProductId.of(UUID uuid)    // Cria a partir de UUID existente
+productId.getValue()       // Retorna UUID
 ```
 
 #### ProductCode
 ```java
 // Código do produto (máx 60 caracteres)
+@Getter @EqualsAndHashCode
 ProductCode.of("PROD-001")
+code.getValue()            // Retorna String
 ```
 
 #### NcmCode
 ```java
 // Código NCM (Nomenclatura Comum do Mercosul)
 // Formatos: "XXXX.XX.XX" ou "XXXXXXXX"
+@Getter @EqualsAndHashCode
 NcmCode.of("8471.30.19")
 NcmCode.of("84713019")
+ncmCode.getValue()         // Retorna formato normalizado
+ncmCode.digitsOnly()       // Retorna apenas dígitos
 ```
 
 #### EanCode
 ```java
 // Código EAN/GTIN (8, 12, 13 ou 14 dígitos)
+@Getter @EqualsAndHashCode
 EanCode.of("7891234567890")
-EanCode.empty()  // Produto sem EAN
+EanCode.empty()            // Produto sem EAN
+eanCode.getValue()         // Retorna String
+eanCode.isEmpty()          // Verifica se vazio
 ```
 
 #### Money
 ```java
 // Valor monetário com 4 casas decimais
+@Getter (equals/hashCode customizado para BigDecimal)
 Money.of(new BigDecimal("199.99"))
 Money.zero()
+money.getAmount()          // Retorna BigDecimal
 money.add(other)
 money.subtract(other)
 money.multiply(quantity)
@@ -242,29 +261,59 @@ money.isZero()
 #### Weight
 ```java
 // Peso em quilogramas
-Weight.of(new BigDecimal("1.5"))
+@Getter (equals/hashCode customizado para BigDecimal)
+Weight.ofKilograms(new BigDecimal("1.5"))
 Weight.zero()
+weight.getValueInKg()      // Retorna BigDecimal
+weight.inKilograms()       // Alias para getValueInKg()
+weight.inGrams()           // Converte para gramas
 ```
 
 #### Dimensions
 ```java
 // Dimensões em centímetros
+@Getter (equals/hashCode customizado para BigDecimal)
 Dimensions.of(height, width, depth)
 Dimensions.zero()
-dimensions.volume()  // Calcula volume
+dimensions.getHeight()     // Retorna BigDecimal
+dimensions.getWidth()
+dimensions.getDepth()
+dimensions.volumeInCubicCentimeters()
+dimensions.volumeInCubicMeters()
 ```
 
 #### UnitOfMeasure
 ```java
 // Unidade de medida (máx 6 caracteres)
+@Getter @EqualsAndHashCode
 UnitOfMeasure.of("UN")
 UnitOfMeasure.of("KG")
 UnitOfMeasure.of("M")
+unit.getValue()            // Retorna String (uppercase)
 ```
 
-### 4.3 Comportamentos do Domínio
+### 4.3 Product Aggregate Root
+
+A entidade Product utiliza Lombok para getters e equals/hashCode:
 
 ```java
+@Getter
+@EqualsAndHashCode(of = "id")
+@ToString(of = {"id", "code", "description", "status"})
+public final class Product {
+    // Campos acessíveis via getters: getId(), getCode(), getDescription(), etc.
+}
+```
+
+### 4.4 Comportamentos do Domínio
+
+```java
+// Acesso a dados (via Lombok @Getter)
+product.getId()         // Retorna ProductId
+product.getCode()       // Retorna ProductCode
+product.getStatus()     // Retorna ProductStatus
+product.getUnitPrice()  // Retorna Money
+
 // Ativação/Desativação
 product.activate()      // Ativa o produto
 product.deactivate()    // Inativa o produto

@@ -71,34 +71,34 @@ public class ProductDtoMapper {
 
     public ProductResponse toResponse(Product product) {
         return new ProductResponse(
-            product.id().value(),
-            product.code().value(),
-            product.integrationCode(),
-            product.description(),
-            product.detailedDescription(),
-            product.unit().value(),
-            product.ncmCode().value(),
-            product.eanCode().value(),
-            product.type().name(),
-            product.status().name(),
-            product.brand(),
-            product.model(),
-            product.family(),
-            product.unitPrice().amount(),
-            product.costPrice().amount(),
-            product.grossWeight().inKilograms(),
-            product.netWeight().inKilograms(),
+            product.getId().getValue(),
+            product.getCode().getValue(),
+            product.getIntegrationCode(),
+            product.getDescription(),
+            product.getDetailedDescription(),
+            product.getUnit().getValue(),
+            product.getNcmCode().getValue(),
+            product.getEanCode().getValue(),
+            product.getType().name(),
+            product.getStatus().name(),
+            product.getBrand(),
+            product.getModel(),
+            product.getFamily(),
+            product.getUnitPrice().getAmount(),
+            product.getCostPrice().getAmount(),
+            product.getGrossWeight().inKilograms(),
+            product.getNetWeight().inKilograms(),
             new ProductResponse.DimensionsResponse(
-                product.dimensions().height(),
-                product.dimensions().width(),
-                product.dimensions().depth()
+                product.getDimensions().getHeight(),
+                product.getDimensions().getWidth(),
+                product.getDimensions().getDepth()
             ),
-            product.internalNotes(),
-            product.stockQuantity(),
-            product.minimumStock(),
+            product.getInternalNotes(),
+            product.getStockQuantity(),
+            product.getMinimumStock(),
             product.isLowStock(),
-            product.createdAt(),
-            product.updatedAt()
+            product.getCreatedAt(),
+            product.getUpdatedAt()
         );
     }
 }

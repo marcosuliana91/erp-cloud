@@ -1,5 +1,8 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -7,6 +10,8 @@ import java.util.regex.Pattern;
  * Value Object representing EAN/GTIN barcode.
  * Supports EAN-8, EAN-13, and GTIN-14 formats.
  */
+@Getter
+@EqualsAndHashCode
 public final class EanCode {
 
     private static final Pattern EAN_PATTERN = Pattern.compile("^\\d{8}$|^\\d{13}$|^\\d{14}$");
@@ -37,25 +42,8 @@ public final class EanCode {
         return EAN_PATTERN.matcher(value.trim()).matches();
     }
 
-    public String value() {
-        return value;
-    }
-
     public boolean isEmpty() {
         return value.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EanCode eanCode = (EanCode) o;
-        return Objects.equals(value, eanCode.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

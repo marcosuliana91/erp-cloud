@@ -1,11 +1,16 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Objects;
 
 /**
  * Value Object representing Unit of Measure.
  * Common units: UN (unit), KG, G, L, ML, M, CM, M2, M3, CX (box), PC (piece), etc.
  */
+@Getter
+@EqualsAndHashCode
 public final class UnitOfMeasure {
 
     private static final int MAX_LENGTH = 6;
@@ -42,23 +47,6 @@ public final class UnitOfMeasure {
 
     public static UnitOfMeasure meter() {
         return new UnitOfMeasure("M");
-    }
-
-    public String value() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UnitOfMeasure that = (UnitOfMeasure) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

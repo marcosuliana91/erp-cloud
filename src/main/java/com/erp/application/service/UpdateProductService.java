@@ -39,7 +39,7 @@ public class UpdateProductService implements UpdateProductUseCase {
     private void validateUniqueCodeIfChanged(Product product, String newCode) {
         if (newCode != null && !newCode.isBlank()) {
             ProductCode newProductCode = ProductCode.of(newCode);
-            if (!product.code().equals(newProductCode)) {
+            if (!product.getCode().equals(newProductCode)) {
                 if (productRepository.existsByCode(newProductCode)) {
                     throw new DuplicateEntityException("Product", "code", newCode);
                 }
@@ -49,7 +49,7 @@ public class UpdateProductService implements UpdateProductUseCase {
 
     private void validateUniqueIntegrationCodeIfChanged(Product product, String newIntegrationCode) {
         if (newIntegrationCode != null && !newIntegrationCode.isBlank()) {
-            String currentIntegrationCode = product.integrationCode();
+            String currentIntegrationCode = product.getIntegrationCode();
             if (currentIntegrationCode == null || !currentIntegrationCode.equals(newIntegrationCode)) {
                 if (productRepository.existsByIntegrationCode(newIntegrationCode)) {
                     throw new DuplicateEntityException("Product", "integrationCode", newIntegrationCode);
@@ -62,13 +62,13 @@ public class UpdateProductService implements UpdateProductUseCase {
         // Update codes
         ProductCode code = command.code() != null && !command.code().isBlank()
             ? ProductCode.of(command.code())
-            : product.code();
+            : product.getCode();
         NcmCode ncmCode = command.ncmCode() != null && !command.ncmCode().isBlank()
             ? NcmCode.of(command.ncmCode())
-            : product.ncmCode();
+            : product.getNcmCode();
         EanCode eanCode = command.eanCode() != null
             ? EanCode.of(command.eanCode())
-            : product.eanCode();
+            : product.getEanCode();
 
         product.updateCodes(code, command.integrationCode(), ncmCode, eanCode);
 
@@ -99,10 +99,10 @@ public class UpdateProductService implements UpdateProductUseCase {
         // Update physical attributes
         Weight grossWeight = command.grossWeight() != null
             ? Weight.ofKilograms(command.grossWeight())
-            : product.grossWeight();
+            : product.getGrossWeight();
         Weight netWeight = command.netWeight() != null
             ? Weight.ofKilograms(command.netWeight())
-            : product.netWeight();
+            : product.getNetWeight();
         Dimensions dimensions = buildDimensions(command, product);
 
         product.updatePhysicalAttributes(grossWeight, netWeight, dimensions);
@@ -124,9 +124,9 @@ public class UpdateProductService implements UpdateProductUseCase {
     }
 
     private Dimensions buildDimensions(UpdateProductCommand command, Product product) {
-        BigDecimal height = command.height() != null ? command.height() : product.dimensions().height();
-        BigDecimal width = command.width() != null ? command.width() : product.dimensions().width();
-        BigDecimal depth = command.depth() != null ? command.depth() : product.dimensions().depth();
+        BigDecimal height = command.height() != null ? command.height() : product.getDimensions().getHeight();
+        BigDecimal width = command.width() != null ? command.width() : product.getDimensions().getWidth();
+        BigDecimal depth = command.depth() != null ? command.depth() : product.getDimensions().getDepth();
         return Dimensions.of(height, width, depth);
     }
 }

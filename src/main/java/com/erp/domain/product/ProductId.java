@@ -1,5 +1,8 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -7,6 +10,8 @@ import java.util.UUID;
  * Value Object representing a Product identifier.
  * Immutable and self-validating.
  */
+@Getter
+@EqualsAndHashCode
 public final class ProductId {
 
     private final UUID value;
@@ -26,23 +31,6 @@ public final class ProductId {
 
     public static ProductId generate() {
         return new ProductId(UUID.randomUUID());
-    }
-
-    public UUID value() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductId productId = (ProductId) o;
-        return Objects.equals(value, productId.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

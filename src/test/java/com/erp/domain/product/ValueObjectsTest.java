@@ -20,7 +20,7 @@ class ValueObjectsTest {
         UUID uuid = UUID.randomUUID();
         ProductId productId = ProductId.of(uuid);
 
-        assertEquals(uuid, productId.value());
+        assertEquals(uuid, productId.getValue());
     }
 
     @Test
@@ -29,7 +29,7 @@ class ValueObjectsTest {
         String uuidString = "550e8400-e29b-41d4-a716-446655440000";
         ProductId productId = ProductId.of(uuidString);
 
-        assertEquals(UUID.fromString(uuidString), productId.value());
+        assertEquals(UUID.fromString(uuidString), productId.getValue());
     }
 
     @Test
@@ -37,7 +37,7 @@ class ValueObjectsTest {
     void shouldGenerateNewProductId() {
         ProductId productId = ProductId.generate();
 
-        assertNotNull(productId.value());
+        assertNotNull(productId.getValue());
     }
 
     // ProductCode Tests
@@ -46,7 +46,7 @@ class ValueObjectsTest {
     void shouldCreateValidProductCode() {
         ProductCode code = ProductCode.of("PROD-001");
 
-        assertEquals("PROD-001", code.value());
+        assertEquals("PROD-001", code.getValue());
     }
 
     @Test
@@ -62,7 +62,7 @@ class ValueObjectsTest {
     void shouldCreateValidNcmCode(String input) {
         NcmCode ncmCode = NcmCode.of(input);
 
-        assertEquals("1234.56.78", ncmCode.value());
+        assertEquals("1234.56.78", ncmCode.getValue());
     }
 
     @Test
@@ -78,7 +78,7 @@ class ValueObjectsTest {
     void shouldCreateValidEanCode(String input) {
         EanCode eanCode = EanCode.of(input);
 
-        assertEquals(input, eanCode.value());
+        assertEquals(input, eanCode.getValue());
     }
 
     @Test
@@ -95,16 +95,16 @@ class ValueObjectsTest {
     void shouldCreateUnitOfMeasureUppercase() {
         UnitOfMeasure unit = UnitOfMeasure.of("un");
 
-        assertEquals("UN", unit.value());
+        assertEquals("UN", unit.getValue());
     }
 
     @Test
     @DisplayName("Should create common UnitOfMeasure")
     void shouldCreateCommonUnitOfMeasure() {
-        assertEquals("UN", UnitOfMeasure.unit().value());
-        assertEquals("KG", UnitOfMeasure.kilogram().value());
-        assertEquals("L", UnitOfMeasure.liter().value());
-        assertEquals("M", UnitOfMeasure.meter().value());
+        assertEquals("UN", UnitOfMeasure.unit().getValue());
+        assertEquals("KG", UnitOfMeasure.kilogram().getValue());
+        assertEquals("L", UnitOfMeasure.liter().getValue());
+        assertEquals("M", UnitOfMeasure.meter().getValue());
     }
 
     // Money Tests
@@ -113,7 +113,7 @@ class ValueObjectsTest {
     void shouldCreateMoneyWithCorrectScale() {
         Money money = Money.of(new BigDecimal("99.99"));
 
-        assertEquals(new BigDecimal("99.9900"), money.amount());
+        assertEquals(new BigDecimal("99.9900"), money.getAmount());
     }
 
     @Test
@@ -124,7 +124,7 @@ class ValueObjectsTest {
 
         Money result = a.add(b);
 
-        assertEquals(new BigDecimal("15.5000"), result.amount());
+        assertEquals(new BigDecimal("15.5000"), result.getAmount());
     }
 
     @Test
@@ -156,9 +156,9 @@ class ValueObjectsTest {
     void shouldCreateDimensions() {
         Dimensions dimensions = Dimensions.of(10.0, 20.0, 30.0);
 
-        assertEquals(new BigDecimal("10.00"), dimensions.height());
-        assertEquals(new BigDecimal("20.00"), dimensions.width());
-        assertEquals(new BigDecimal("30.00"), dimensions.depth());
+        assertEquals(new BigDecimal("10.00"), dimensions.getHeight());
+        assertEquals(new BigDecimal("20.00"), dimensions.getWidth());
+        assertEquals(new BigDecimal("30.00"), dimensions.getDepth());
     }
 
     @Test

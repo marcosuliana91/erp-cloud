@@ -1,5 +1,8 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -7,6 +10,8 @@ import java.util.regex.Pattern;
  * Value Object representing NCM (Nomenclatura Comum do Mercosul) code.
  * Format: XXXX.XX.XX (8 digits)
  */
+@Getter
+@EqualsAndHashCode
 public final class NcmCode {
 
     private static final Pattern NCM_PATTERN = Pattern.compile("^\\d{4}\\.\\d{2}\\.\\d{2}$");
@@ -42,25 +47,8 @@ public final class NcmCode {
         return trimmed;
     }
 
-    public String value() {
-        return value;
-    }
-
     public String digitsOnly() {
         return value.replace(".", "");
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NcmCode ncmCode = (NcmCode) o;
-        return Objects.equals(value, ncmCode.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
     }
 
     @Override

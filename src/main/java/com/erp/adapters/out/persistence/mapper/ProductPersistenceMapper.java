@@ -15,31 +15,31 @@ public class ProductPersistenceMapper {
     public ProductEntity toEntity(Product product) {
         ProductEntity entity = new ProductEntity();
 
-        entity.setId(product.id().value());
-        entity.setCode(product.code().value());
-        entity.setIntegrationCode(product.integrationCode());
-        entity.setDescription(product.description());
-        entity.setDetailedDescription(product.detailedDescription());
-        entity.setUnit(product.unit().value());
-        entity.setNcmCode(product.ncmCode().value());
-        entity.setEanCode(product.eanCode().isEmpty() ? null : product.eanCode().value());
-        entity.setType(mapType(product.type()));
-        entity.setStatus(mapStatus(product.status()));
-        entity.setBrand(product.brand());
-        entity.setModel(product.model());
-        entity.setFamily(product.family());
-        entity.setUnitPrice(product.unitPrice().amount());
-        entity.setCostPrice(product.costPrice().amount());
-        entity.setGrossWeight(product.grossWeight().inKilograms());
-        entity.setNetWeight(product.netWeight().inKilograms());
-        entity.setHeight(product.dimensions().height());
-        entity.setWidth(product.dimensions().width());
-        entity.setDepth(product.dimensions().depth());
-        entity.setInternalNotes(product.internalNotes());
-        entity.setStockQuantity(product.stockQuantity());
-        entity.setMinimumStock(product.minimumStock());
-        entity.setCreatedAt(product.createdAt());
-        entity.setUpdatedAt(product.updatedAt());
+        entity.setId(product.getId().getValue());
+        entity.setCode(product.getCode().getValue());
+        entity.setIntegrationCode(product.getIntegrationCode());
+        entity.setDescription(product.getDescription());
+        entity.setDetailedDescription(product.getDetailedDescription());
+        entity.setUnit(product.getUnit().getValue());
+        entity.setNcmCode(product.getNcmCode().getValue());
+        entity.setEanCode(product.getEanCode().isEmpty() ? null : product.getEanCode().getValue());
+        entity.setType(mapType(product.getType()));
+        entity.setStatus(mapStatus(product.getStatus()));
+        entity.setBrand(product.getBrand());
+        entity.setModel(product.getModel());
+        entity.setFamily(product.getFamily());
+        entity.setUnitPrice(product.getUnitPrice().getAmount());
+        entity.setCostPrice(product.getCostPrice().getAmount());
+        entity.setGrossWeight(product.getGrossWeight().inKilograms());
+        entity.setNetWeight(product.getNetWeight().inKilograms());
+        entity.setHeight(product.getDimensions().getHeight());
+        entity.setWidth(product.getDimensions().getWidth());
+        entity.setDepth(product.getDimensions().getDepth());
+        entity.setInternalNotes(product.getInternalNotes());
+        entity.setStockQuantity(product.getStockQuantity());
+        entity.setMinimumStock(product.getMinimumStock());
+        entity.setCreatedAt(product.getCreatedAt());
+        entity.setUpdatedAt(product.getUpdatedAt());
 
         return entity;
     }

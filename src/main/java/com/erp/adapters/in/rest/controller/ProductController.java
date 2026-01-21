@@ -50,7 +50,7 @@ public class ProductController extends BaseController<CreateProductRequest, Prod
         var command = mapper.toCreateCommand(request);
         Product product = createProductUseCase.execute(command);
         ProductResponse response = mapper.toResponse(product);
-        return created(response, product.id().value());
+        return created(response, product.getId().getValue());
     }
 
     @PutMapping("/{id}")

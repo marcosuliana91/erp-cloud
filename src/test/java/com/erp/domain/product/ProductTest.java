@@ -20,13 +20,13 @@ class ProductTest {
             .ncmCode("1234.56.78")
             .build();
 
-        assertNotNull(product.id());
-        assertEquals("PROD-001", product.code().value());
-        assertEquals("Test Product", product.description());
-        assertEquals("UN", product.unit().value());
-        assertEquals("1234.56.78", product.ncmCode().value());
-        assertEquals(ProductStatus.ACTIVE, product.status());
-        assertEquals(ProductType.PRODUCT, product.type());
+        assertNotNull(product.getId());
+        assertEquals("PROD-001", product.getCode().getValue());
+        assertEquals("Test Product", product.getDescription());
+        assertEquals("UN", product.getUnit().getValue());
+        assertEquals("1234.56.78", product.getNcmCode().getValue());
+        assertEquals(ProductStatus.ACTIVE, product.getStatus());
+        assertEquals(ProductType.PRODUCT, product.getType());
     }
 
     @Test
@@ -61,7 +61,7 @@ class ProductTest {
 
         product.updatePrice(newPrice);
 
-        assertEquals(newPrice, product.unitPrice());
+        assertEquals(newPrice, product.getUnitPrice());
     }
 
     @Test
@@ -72,7 +72,7 @@ class ProductTest {
 
         product.activate();
 
-        assertEquals(ProductStatus.ACTIVE, product.status());
+        assertEquals(ProductStatus.ACTIVE, product.getStatus());
     }
 
     @Test
@@ -82,7 +82,7 @@ class ProductTest {
 
         product.deactivate();
 
-        assertEquals(ProductStatus.INACTIVE, product.status());
+        assertEquals(ProductStatus.INACTIVE, product.getStatus());
     }
 
     @Test
@@ -92,7 +92,7 @@ class ProductTest {
 
         product.discontinue();
 
-        assertEquals(ProductStatus.DISCONTINUED, product.status());
+        assertEquals(ProductStatus.DISCONTINUED, product.getStatus());
     }
 
     @Test
@@ -132,7 +132,7 @@ class ProductTest {
 
         product.adjustStock(5);
 
-        assertEquals(15, product.stockQuantity());
+        assertEquals(15, product.getStockQuantity());
     }
 
     @Test

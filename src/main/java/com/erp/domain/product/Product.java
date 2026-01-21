@@ -1,13 +1,19 @@
 package com.erp.domain.product;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Product aggregate root - the main domain entity.
- * Pure Java implementation with business rules and invariants.
- * No framework dependencies.
+ * Contains business rules and invariants.
  */
+@Getter
+@EqualsAndHashCode(of = "id")
+@ToString(of = {"id", "code", "description", "status"})
 public final class Product {
 
     private final ProductId id;
@@ -181,123 +187,6 @@ public final class Product {
         }
         this.minimumStock = minimumStock != null ? minimumStock : 0;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    // Getters (read-only access to state)
-
-    public ProductId id() {
-        return id;
-    }
-
-    public ProductCode code() {
-        return code;
-    }
-
-    public String integrationCode() {
-        return integrationCode;
-    }
-
-    public String description() {
-        return description;
-    }
-
-    public String detailedDescription() {
-        return detailedDescription;
-    }
-
-    public UnitOfMeasure unit() {
-        return unit;
-    }
-
-    public NcmCode ncmCode() {
-        return ncmCode;
-    }
-
-    public EanCode eanCode() {
-        return eanCode;
-    }
-
-    public ProductType type() {
-        return type;
-    }
-
-    public ProductStatus status() {
-        return status;
-    }
-
-    public String brand() {
-        return brand;
-    }
-
-    public String model() {
-        return model;
-    }
-
-    public String family() {
-        return family;
-    }
-
-    public Money unitPrice() {
-        return unitPrice;
-    }
-
-    public Money costPrice() {
-        return costPrice;
-    }
-
-    public Weight grossWeight() {
-        return grossWeight;
-    }
-
-    public Weight netWeight() {
-        return netWeight;
-    }
-
-    public Dimensions dimensions() {
-        return dimensions;
-    }
-
-    public String internalNotes() {
-        return internalNotes;
-    }
-
-    public Integer stockQuantity() {
-        return stockQuantity;
-    }
-
-    public Integer minimumStock() {
-        return minimumStock;
-    }
-
-    public LocalDateTime createdAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime updatedAt() {
-        return updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", code=" + code +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
     }
 
     // Builder pattern for creating Product instances

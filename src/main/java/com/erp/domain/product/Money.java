@@ -1,5 +1,7 @@
 package com.erp.domain.product;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
@@ -7,7 +9,9 @@ import java.util.Objects;
 /**
  * Value Object representing monetary values.
  * Immutable and precise for financial calculations.
+ * Note: Uses custom equals/hashCode due to BigDecimal comparison semantics.
  */
+@Getter
 public final class Money {
 
     private static final int SCALE = 4;
@@ -37,10 +41,6 @@ public final class Money {
 
     public static Money zero() {
         return new Money(BigDecimal.ZERO);
-    }
-
-    public BigDecimal amount() {
-        return amount;
     }
 
     public Money add(Money other) {
@@ -77,7 +77,7 @@ public final class Money {
 
     @Override
     public int hashCode() {
-        return Objects.hash(amount);
+        return Objects.hash(amount.stripTrailingZeros());
     }
 
     @Override

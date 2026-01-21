@@ -36,7 +36,7 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public Optional<Product> findById(ProductId id) {
-        return jpaRepository.findById(id.value())
+        return jpaRepository.findById(id.getValue())
             .map(mapper::toDomain);
     }
 
@@ -48,12 +48,12 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public boolean existsById(ProductId id) {
-        return jpaRepository.existsById(id.value());
+        return jpaRepository.existsById(id.getValue());
     }
 
     @Override
     public void deleteById(ProductId id) {
-        jpaRepository.deleteById(id.value());
+        jpaRepository.deleteById(id.getValue());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public Optional<Product> findByCode(ProductCode code) {
-        return jpaRepository.findByCode(code.value())
+        return jpaRepository.findByCode(code.getValue())
             .map(mapper::toDomain);
     }
 
@@ -75,7 +75,7 @@ public class ProductPersistenceAdapter implements ProductRepository {
 
     @Override
     public boolean existsByCode(ProductCode code) {
-        return jpaRepository.existsByCode(code.value());
+        return jpaRepository.existsByCode(code.getValue());
     }
 
     @Override
