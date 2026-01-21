@@ -19,15 +19,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: UTC
     open-in-view: false
+    defer-datasource-initialization: true
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
