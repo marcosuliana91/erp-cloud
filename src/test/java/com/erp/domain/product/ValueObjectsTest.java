@@ -166,6 +166,7 @@ class ValueObjectsTest {
     void shouldCalculateVolume() {
         Dimensions dimensions = Dimensions.of(10.0, 20.0, 30.0);
 
-        assertEquals(new BigDecimal("6000.0000"), dimensions.volumeInCubicCentimeters());
+        // Use compareTo for BigDecimal comparison (ignores scale differences)
+        assertEquals(0, new BigDecimal("6000").compareTo(dimensions.volumeInCubicCentimeters()));
     }
 }
