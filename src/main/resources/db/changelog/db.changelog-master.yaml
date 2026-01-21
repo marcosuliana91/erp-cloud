@@ -1,3 +1,9 @@
 databaseChangeLog:
-  - include:
-      file: classpath:/db/changelog/changes/001-create-products-table.yaml
+  - changeSet:
+      id: 001-create-products-table
+      author: erp-cloud
+      sqlFile:
+        path: 001-create-products-table.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        endDelimiter: ;
