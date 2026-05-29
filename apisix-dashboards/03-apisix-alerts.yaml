@@ -1,0 +1,350 @@
+# ============================================================================
+# APISIX • Alertas (Grafana-managed alerting provisioning)
+# ----------------------------------------------------------------------------
+# Como usar (NAO precisa o DevOps mexer no Prometheus):
+#   1) Troque  __PROM_UID__  pelo UID do seu datasource Prometheus
+#      (ex.: nLiZZi8Mz = prometheus-prd-bifrost). Veja em
+#      Connections > Data sources > (seu Prometheus) > a URL tem .../datasources/edit/<UID>.
+#   2) Coloque este arquivo em /etc/grafana/provisioning/alerting/ e reinicie o Grafana
+#      OU use como referencia para criar as regras na UI (Alerting > Alert rules > New).
+#   3) Garanta um Contact point (Slack/e-mail/Teams) na Notification policy default,
+#      ou crie rotas por label severity= / team=.
+#
+# SLO assumido: disponibilidade 99.9% (error budget = 0.001) e P95 alvo = 500ms.
+#   - Fast burn  = 14.4x o budget  -> 0.0144  (queima ~2% do budget em 1h)
+#   - Slow burn  = 6x   o budget   -> 0.006
+# Ajuste os numeros se o SLO oficial for outro.
+# ============================================================================
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: APISIX - Disponibilidade & Latencia
+    folder: APISIX Alerts
+    interval: 1m
+    rules:
+      # ----------------------------------------------------------------------
+      # 1) Burn-rate RAPIDO de erro 5xx (multi-janela 5m + 1h) -> CRITICO
+      #    So dispara se AMBAS as janelas estourarem: evita ruido de pico isolado.
+      # ----------------------------------------------------------------------
+      - uid: apisix_5xx_fast_burn
+        title: APISIX 5xx error budget fast burn
+        condition: C
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: critical
+          team: api-gateway
+        annotations:
+          summary: "APISIX queimando error budget rapido (5xx)"
+          description: "Taxa de erro 5xx (5m e 1h) acima de 14.4x o budget de 0.1%. Disponibilidade do gateway comprometida."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "sum(rate(apisix_http_status{code=~\"5..\"}[5m])) / sum(rate(apisix_http_status[5m]))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 3900, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "sum(rate(apisix_http_status{code=~\"5..\"}[1h])) / sum(rate(apisix_http_status[1h]))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: math
+              expression: "$A > 0.0144 && $B > 0.0144"
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 2) Burn-rate LENTO de erro 5xx (1h + 6h) -> WARNING
+      # ----------------------------------------------------------------------
+      - uid: apisix_5xx_slow_burn
+        title: APISIX 5xx error budget slow burn
+        condition: C
+        for: 15m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          team: api-gateway
+        annotations:
+          summary: "APISIX queimando error budget de forma sustentada (5xx)"
+          description: "Taxa de erro 5xx (1h e 6h) acima de 6x o budget de 0.1%. Degradacao lenta de disponibilidade."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 3900, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "sum(rate(apisix_http_status{code=~\"5..\"}[1h])) / sum(rate(apisix_http_status[1h]))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            relativeTimeRange: { from: 21900, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "sum(rate(apisix_http_status{code=~\"5..\"}[6h])) / sum(rate(apisix_http_status[6h]))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: math
+              expression: "$A > 0.006 && $B > 0.006"
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 3) P95 (request) acima do SLO, POR service -> WARNING
+      #    Gera uma instancia de alerta por API (service).
+      # ----------------------------------------------------------------------
+      - uid: apisix_latency_p95_request_high
+        title: APISIX P95 latencia alta (request)
+        condition: C
+        for: 10m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          team: api-gateway
+        annotations:
+          summary: "P95 acima de 500ms na API {{ $labels.service }}"
+          description: "Latencia total (request) P95 da API {{ $labels.service }} acima do alvo de 500ms por 10m."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "histogram_quantile(0.95, sum by (service, le) (rate(apisix_http_latency_bucket{type=\"request\"}[5m])))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [500] }
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 4) P95 do UPSTREAM (backend) alto, POR service -> WARNING
+      #    Separa "culpa do backend" da "culpa do gateway".
+      # ----------------------------------------------------------------------
+      - uid: apisix_latency_p95_upstream_high
+        title: APISIX P95 upstream alto (backend)
+        condition: C
+        for: 10m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          team: api-gateway
+        annotations:
+          summary: "Backend lento na API {{ $labels.service }}"
+          description: "Latencia do upstream P95 da API {{ $labels.service }} acima de 500ms por 10m. Investigar o backend, nao o gateway."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "histogram_quantile(0.95, sum by (service, le) (rate(apisix_http_latency_bucket{type=\"upstream\"}[5m])))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [500] }
+              refId: C
+
+  - orgId: 1
+    name: APISIX - Plataforma & Auto-saude
+    folder: APISIX Alerts
+    interval: 1m
+    rules:
+      # ----------------------------------------------------------------------
+      # 5) etcd inalcancavel (control plane) -> CRITICO
+      # ----------------------------------------------------------------------
+      - uid: apisix_etcd_unreachable
+        title: APISIX etcd inalcancavel
+        condition: C
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+        labels:
+          severity: critical
+          team: api-gateway
+        annotations:
+          summary: "APISIX sem acesso ao etcd"
+          description: "apisix_etcd_reachable < 1: o control plane esta inalcancavel. Mudancas de config nao propagam."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "min(apisix_etcd_reachable)"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 6) Pipeline de metricas com erro -> CRITICO (voce ficou CEGO)
+      #    apisix_nginx_metric_errors_total > 0 = shared dict cheio, metrica perdida.
+      # ----------------------------------------------------------------------
+      - uid: apisix_metric_pipeline_errors
+        title: APISIX perdendo metricas (metric_errors > 0)
+        condition: C
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: critical
+          team: api-gateway
+        annotations:
+          summary: "APISIX esta perdendo metricas (cardinalidade)"
+          description: "apisix_nginx_metric_errors_total aumentando: o shared dict prometheus-metrics encheu. TODOS os dashboards passam a subestimar valores. Reduza cardinalidade (label node/LLM)."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "sum(rate(apisix_nginx_metric_errors_total[5m]))"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 7) Nenhum node APISIX reportando -> CRITICO
+      #    absent() retorna 1 quando a metrica some (scrape/gateway caiu).
+      #    Nao depende de saber o label 'job'.
+      # ----------------------------------------------------------------------
+      - uid: apisix_no_targets
+        title: APISIX sem nenhum node reportando
+        condition: C
+        for: 3m
+        noDataState: Alerting
+        execErrState: Error
+        labels:
+          severity: critical
+          team: api-gateway
+        annotations:
+          summary: "Nenhum node APISIX no scrape"
+          description: "absent(apisix_node_info) = 1: nenhuma instancia APISIX esta sendo coletada. Gateway fora ou scrape quebrado."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "absent(apisix_node_info)"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+              refId: C
+
+      # ----------------------------------------------------------------------
+      # 8) Shared dict enchendo, POR dict -> WARNING
+      #    Antecipa o cenario do alerta #6 (perda de metrica / falha de plugin).
+      # ----------------------------------------------------------------------
+      - uid: apisix_shared_dict_high
+        title: APISIX shared dict acima de 85%
+        condition: C
+        for: 10m
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+          team: api-gateway
+        annotations:
+          summary: "Shared dict {{ $labels.name }} acima de 85%"
+          description: "O shared dict {{ $labels.name }} esta com mais de 85% de uso. Risco para metricas (prometheus-metrics) ou rate-limit (plugin-limit-count)."
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: __PROM_UID__
+            model:
+              datasource: { type: prometheus, uid: __PROM_UID__ }
+              editorMode: code
+              expr: "1 - (apisix_shared_dict_free_space_bytes / apisix_shared_dict_capacity_bytes)"
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource: { type: __expr__, uid: __expr__ }
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0.85] }
+              refId: C
